@@ -8,7 +8,8 @@
   <meta name='description' content='Twitter App description'>
   
   <script>
-    var users = ["codewisdom", "tng_s8", "zefrank"];
+    var users = ["cnnbrk", "appleinsider", "CNETNews", "Macworld", "modmyi",
+                 "iMore", "codewisdom", "tng_s8", "zefrank"];
   </script>
     
   <style>
@@ -27,25 +28,40 @@
           
     /* layout */
     .page {
-      padding: 20px;
+      padding: 1%;
       position: relative;
       overflow: auto; }
-      
-    .index {
-      min-width: 15em;
-      max-width: 51%;
-      float: left;
-    }
     
     .header {
       letter-spacing: 2px;
+      color: white;
+      background: #222;
+      text-indent: 20px;
     }
+      .header h1 {
+        font-size: 150%;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        text-shadow: -5px 5px 5px #335413, -5px -5px 5px #3E6790, 5px 5px 5px #662d91
+      }
     
+    .index {
+      max-width: 20%;
+      min-width: 20%;
+      float: left;
+    }
     .tweets {
-      min-width: 25em;
-      max-width: 50%;
+      min-width: 30%;
+      max-width: 35%;
       float: left;
       margin-left: 1%;
+    }
+    .webpage {
+      min-width: 30%;
+      width: 43%;
+      float: left;
+      margin-left: 1%;
+      min-height: 50em;
     }
       
     /* Lists */
@@ -62,14 +78,20 @@
         border-bottom: 1px solid black;
         margin: 0;
         padding: 10px;
+        background: #ddd;
+        background: -moz-linear-gradient(#fff, #dbdbdb) 0 0 #fff;
+        background:  -webkit-linear-gradient(#fff, #dbdbdb) 0 0 #fff;
     }
     
     .listview li:last-child {
         border-bottom-width: 0;
     }
-    .listview li > a {
+    .index a {
+        color: black;
         text-decoration: none;
         display: block;
+        text-shadow: 0 1px 0 #fff;
+        font-family: Helvetica,Arial,sans-serif;
     }
     .bar {
       background: black;
@@ -79,6 +101,7 @@
       font-size: 90%;
     }
     
+    /* Specific modules */
     .index .bar {
       background: #74B042;
       text-shadow: 0 1px 1px #335413;
@@ -89,13 +112,28 @@
       text-shadow: 0 1px 1px #3E6790;
     }
     
+    .webpage .bar {
+      background: #662d91;
+      text-shadow: 0 1px 1px #561d81;
+    }
+    
     .tweets {
       text-align: left;
       letter-spacing: 0;
     }
     
-    
+    li.webpage-container {
+      padding: 0;
+      height: 100%;
+    }
+      .webpage-container iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 50em;
+      }
       
+    
+    /* Phone style */  
     @media screen and (max-width: 640px) {
         
         .hide-on-phones { 
@@ -109,13 +147,14 @@
   </style>
 
 </head>
-<body class="page">
-
+<body>
+  
+  <!-- begin html markup -->
   <div class="header">
     <h1>twitter app</h1>
   </div>
   
-  <div class="main" id="main">
+  <div class="main page" id="main">
     <div id="index" class="index"></div>
     <div id="tweets" class="tweets"></div>
     <div id="webpage" class="webpage"></div>
@@ -123,9 +162,9 @@
   
   <div class="footer"></div>
   
-  <script src="js/jquery.js?v=1.7.2"></script>
+  <!-- templates -->
   <script src="js/tmpl.min.js"></script>
-  
+
   <!-- template for index page -->
   <script type="text/x-template" id="tmpl-index">
     <ul class="listview">
@@ -156,43 +195,99 @@
     </ul>
   </script>
   
-  <script type="text/javascript">
+  <!-- template for embedded webpage -->
+  <script type="text/x-template" id="tmpl-webpage">
+    <ul class="listview">
+      <li class="bar li-divider">
+        <h2 id="webpage-title">{%=o.url%}</h2>
+      </li>
+      <li class="webpage-container">
+        <iframe frameborder="0" scrolling="auto" src="{%=o.url%}"></iframe> 
+      </li>
+    </ul>
+  </script>
+  
+  <script src="js/jquery.js?v=1.7.2"></script>
+  <script>
       // main closure
       (function ($){
         
           // global variables within main closure
           var url = location.href,
-              main = document.getElementById('main'),
-              index = document.getElementById('index'),
-              tweetsPage = document.getElementById('tweets'),
-              webpage = document.getElementById('webpage'),
+              main = document.getElementById( 'main' ),
+              index = document.getElementById( 'index' ),
+              tweetsPage = document.getElementById( 'tweets' ),
+              webpage = document.getElementById( 'webpage' ),
               timelineUrl = "https://twitter.com/statuses/user_timeline.json?screen_name=";
         
           // initialize page
           $(function pageReady(){
-              var index;
          
+              loadIndex();
               loadUser();
               
-              loadIndex();
-                  
-              index = $('#index');
-              
-              // load user page on index link click
-              index.on('click', 'a', function(event){
-                  event.preventDefault;
-                  var user = this.getAttribute('data-user');
-                  log(user);
-                  loadUser(user);
-                  return false;
-              });
+              bindIndexClicks();
+              bindHistoryChange();
+              bindLoadingWebpages();
  
           });
           
+          
+          function bindHistoryChange(){
+              if ( history.pushState ) {
+                  $( window ).on('popstate', function() {
+                      log('popstate');
+                      log (history.state);
+                      if ( history.state && history.state.user ) {
+                          loadUser( history.state.user );
+                      } else {
+                          loadUser();
+                      }
+                  })
+              }
+          }
+          
+          // load user page on index link click
+          function bindIndexClicks() {
+              $(index).on('click', 'a', function(event){
+                  var user = this.getAttribute('data-user');
+                  log(user);
+                  loadUser(user);
+                  
+                  // change URL to load user
+                  if ( history.pushState && !location.href.match(/file:\//) ) {
+                      history.pushState({
+                        user: user
+                      }, 'Twitter App | ' + user, '?user=' + user);
+                  } 
+                  return false;
+              });
+          }
+          
+          // load webpage in iframe
+          function bindLoadingWebpages() {
+              $( tweetsPage ).on( 'click', 'a', function(event) {
+                  var tempalteData = {
+                      url: this.href,
+                  };
+                  event.preventDefault();
+                  log('loading url: ' + this.href);
+                  
+                  webpage.innerHTML = tmpl("tmpl-webpage", tempalteData);
+
+                  return false;
+              });
+              
+              $( webpage ).on( 'load', 'iframe', function(event) {
+                  log('loaded iframe');
+                
+              });
+          }
+          
           // load a twitter user page
           function loadUser(user){
-              var user,
-                  userTimelineUrl,
+              log ('loadUser: ' + user);
+              var userTimelineUrl,
                   page = document.createElement('div'),
                   tweets = [];
                   
@@ -202,34 +297,46 @@
               }
               if (user) {
                   log('loading user: ' + user);
+                  webpage.innerHTML = '';
                   tweetsPage.innerHTML = "<em class='loading'>loading...</em>";
                   
                   userTimelineUrl = timelineUrl + user + '&callback=?';
                   $.getJSON(userTimelineUrl, function(data){
-                      var tempalteData;
+                      var tempalteData, message, tweetElements;
                       log(data.length + ' tweets loaded in feed');
                       for (var i=0, length = data.length; i < length; i += 1) {
-                          tweets.push(data[i].text);
+                          tweets.push( (data[i].text ));
                       }
                       log(tweets);
                       tempalteData = {
                         tweets: tweets,
                         user: user
                       };
+                      log(tweets)
                       
                       tweetsPage.innerHTML = tmpl("tmpl-tweets", tempalteData);
                       
-                      // change URL
-                      //if (history.pushState) {
-                      //    history.pushState({}, 'title');
-                      //}
+                      // linkify all tweets after pausing for an instant                      
+                      setTimeout( linkifyTweets, 300);
                       
                   });
                   
-              } 
+              } else {
+                  log('no user, clearing tweet panel');
+                  tweetsPage.innerHTML = '';
+              }
               
               return user;
           }
+          
+          function linkifyTweets() {
+              var tweets = tweetsPage.getElementsByTagName( 'li' );
+
+              for ( var i = 0, length = tweets.length; i < length; i += 1 ) {
+                tweets[i].innerHTML = linkify( tweets[i].innerHTML )
+              }
+          }
+          
           
           // load an list of all twitter users
           function loadIndex(){
@@ -242,6 +349,19 @@
               content.innerHTML = tmpl("tmpl-index", data);
               
               index.appendChild(content);
+          }
+          
+          // replace urls in text with html links
+          function linkify( text ) {
+              var _pattern = /http\S+/g,
+                  _template = '<a href="-h-">-h-</a>';
+              return ( linkify = function linkify( text ) {
+                  var urls = text.match(_pattern); 
+                  if (urls) for ( var i = urls.length; i--; ) {
+                    text = text.replace(urls[i], _template.replace(/-h-/g, urls[i])); 
+                  }
+                  return text;
+              })( text );
           }
 
           // log a message to the developer console if availible.
