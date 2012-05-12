@@ -1,0 +1,13 @@
+# OS generated files #
+.DS_Store?
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# App generated files #
+tmp/
+tmp/**/*
+.bundle
+log/*.log
+.sass-cache/

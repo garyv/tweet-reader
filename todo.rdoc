@@ -1,0 +1,40 @@
+TODO 
+
+    Let user log into account info
+      show side bar with standar stuff
+      
+        timeline, mentions, messages, favorites, search, profile, lists, retweets
+    
+  Hide first column after stuff is activated
+    use back button or something to reactivate it
+    
+  
+  Show your timeline (combo of all you are subscribed to)
+    substitute your "public lists" (lists of what you create)
+    
+    user's lists
+      https://twitter.com/statuses/lists.json?screen_name=dreamed_real
+    
+    
+    With id from lists, load list
+    
+      http://api.twitter.com/1/lists/statuses.json?list_id=67620854
+      
+   More pages (seems to always be 20 per page)
+      http://api.twitter.com/1/lists/statuses.json?list_id=67620854&page=2
+   
+   What is a user subscribed to?
+      http://api.twitter.com/1/lists/statuses.json?list_id=67620854
+    
+   User profile
+     https://twitter.com/statuses/user_timeline/531854571.json  
+     
+   Combine multile feeds
+     https://api.twitter.com/1/users/lookup.json?screen_name=CNN,zefrank
+     https://api.twitter.com/1/users/lookup.json?user_id=58166411,1652541
+    
+      
+  
+    
+  
+  

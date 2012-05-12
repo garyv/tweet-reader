@@ -2,10 +2,10 @@
 <html>
 <head>
   <title>
-    Twitter App | home
+    Tweet Reader | home
   </title>
   <meta charset='utf-8'>
-  <meta name='description' content='Twitter App description'>
+  <meta name='description' content='Tweet Reader description'>
   
   <script>
     var users = ["cnnbrk", "appleinsider", "CNETNews", "Macworld", "modmyi",
@@ -13,31 +13,39 @@
   </script>
     
   <style>
-    html, body, div, p, img, h1, h2, h3 { margin: 0; padding: 0; border: 0; outline: 0; vertical-align: baseline; }
+    html, body, div, p, img, h1, h2, h3 {
+      margin: 0; padding: 0; border: 0; outline: 0; vertical-align: baseline;
+    }
         
-    a:focus, object:focus { outline: none; -moz-outline-style: none; }
+    a:focus, object:focus {
+      outline: none; -moz-outline-style: none;
+    }
     
-    .button { display: inline-block; width: 155px; height: 40px; }
+    .button {
+      display: inline-block; width: 155px; height: 40px;
+    }
     
     /* typography */
     body {
       font-family: verdana, sans-serif;
       font-size: 100%;
       line-height: 1.5;
-      letter-spacing: 1px; }
+      letter-spacing: 1px;
+    }
           
     /* layout */
     .page {
       padding: 1%;
       position: relative;
-      overflow: auto; }
+      overflow: auto;
+    }
     
     .header {
       letter-spacing: 2px;
       color: white;
       background: #222;
       text-indent: 20px;
-    }
+      }
       .header h1 {
         font-size: 150%;
         padding-top: 3px;
@@ -67,21 +75,19 @@
     /* Lists */
     
     .listview {
-      
       list-style: none;
       padding: 0;
       margin: 0;
       border: 1px solid black;
-    }
-    
-    .listview li {
+      }
+      .listview li {
         border-bottom: 1px solid black;
         margin: 0;
         padding: 10px;
         background: #ddd;
         background: -moz-linear-gradient(#fff, #dbdbdb) 0 0 #fff;
         background:  -webkit-linear-gradient(#fff, #dbdbdb) 0 0 #fff;
-    }
+      }
     
     .listview li:last-child {
         border-bottom-width: 0;
@@ -125,7 +131,7 @@
     li.webpage-container {
       padding: 0;
       height: 100%;
-    }
+      }
       .webpage-container iframe {
         width: 100%;
         height: 100%;
@@ -136,13 +142,14 @@
     /* Phone style */  
     @media screen and (max-width: 640px) {
         
-        .hide-on-phones { 
-            display: none; }
-            
-        a { 
-            display: inline-block; 
-            min-width: 67%; 
-        }
+      .hide-on-phones { 
+        display: none;
+      }
+          
+      a { 
+        display: inline-block; 
+        min-width: 67%; 
+      }
     }
   </style>
 
@@ -151,7 +158,7 @@
   
   <!-- begin html markup -->
   <div class="header">
-    <h1>twitter app</h1>
+    <h1>tweet reader</h1>
   </div>
   
   <div class="main page" id="main">
@@ -209,8 +216,8 @@
   
   <script src="js/jquery.js?v=1.7.2"></script>
   <script>
-      // main closure
-      (function ($){
+      // main javascript closure
+      (function ($) {
         
           // global variables within main closure
           var url = location.href,
@@ -221,7 +228,7 @@
               timelineUrl = "https://twitter.com/statuses/user_timeline.json?screen_name=";
         
           // initialize page
-          $(function pageReady(){
+          $(function pageReady() {
          
               loadIndex();
               loadUser();
@@ -235,28 +242,28 @@
           
           function bindHistoryChange(){
               if ( history.pushState ) {
-                  $( window ).on('popstate', function() {
-                      log('popstate');
-                      log (history.state);
+                  $( window ).on( 'popstate' , function() {
+                      log( 'popstate' );
+                      log ( history.state );
                       if ( history.state && history.state.user ) {
                           loadUser( history.state.user );
                       } else {
                           loadUser();
                       }
-                  })
+                  });
               }
           }
           
           // load user page on index link click
           function bindIndexClicks() {
-              $(index).on('click', 'a', function(event){
-                  var user = this.getAttribute('data-user');
-                  log(user);
-                  loadUser(user);
+              $( index ).on( 'click', 'a', function(event) {
+                  var user = this.getAttribute( 'data-user' );
+                  log( user );
+                  loadUser( user );
                   
                   // change URL to load user
                   if ( history.pushState && !location.href.match(/file:\//) ) {
-                      history.pushState({
+                      history.pushState( {
                         user: user
                       }, 'Twitter App | ' + user, '?user=' + user);
                   } 
@@ -266,63 +273,63 @@
           
           // load webpage in iframe
           function bindLoadingWebpages() {
-              $( tweetsPage ).on( 'click', 'a', function(event) {
+              $( tweetsPage ).on( 'click', 'a', function( event ) {
                   var tempalteData = {
                       url: this.href,
                   };
                   event.preventDefault();
-                  log('loading url: ' + this.href);
+                  log( 'loading url: ' + this.href );
                   
-                  webpage.innerHTML = tmpl("tmpl-webpage", tempalteData);
+                  webpage.innerHTML = tmpl( 'tmpl-webpage' , tempalteData );
 
                   return false;
               });
               
-              $( webpage ).on( 'load', 'iframe', function(event) {
-                  log('loaded iframe');
+              $( webpage ).on( 'load', 'iframe', function( event ) {
+                  log( 'loaded iframe' );
                 
               });
           }
           
-          // load a twitter user page
-          function loadUser(user){
-              log ('loadUser: ' + user);
+          // load a twitter account's feed
+          function loadUser( user ){
+              log ( 'loadUser: ' + user );
               var userTimelineUrl,
-                  page = document.createElement('div'),
+                  page = document.createElement( 'div' ),
                   tweets = [];
                   
-              if (url.match(/user=/)) {
-                  user = user || url.split(/user=/)[1].split(/&/)[0];
-                  log(user);
+              if ( url.match(/user=/) ) {
+                  user = user || url.split( /user=/ )[1].split( /&/ )[0];
+                  log( user );
               }
-              if (user) {
-                  log('loading user: ' + user);
+              if ( user ) {
+                  log( 'loading user: ' + user );
                   webpage.innerHTML = '';
                   tweetsPage.innerHTML = "<em class='loading'>loading...</em>";
                   
                   userTimelineUrl = timelineUrl + user + '&callback=?';
-                  $.getJSON(userTimelineUrl, function(data){
+                  $.getJSON( userTimelineUrl, function( data ) {
                       var tempalteData, message, tweetElements;
-                      log(data.length + ' tweets loaded in feed');
+                      log( data.length + ' tweets loaded in feed' );
                       for (var i=0, length = data.length; i < length; i += 1) {
                           tweets.push( (data[i].text ));
                       }
-                      log(tweets);
+                      log( tweets );
                       tempalteData = {
                         tweets: tweets,
                         user: user
                       };
-                      log(tweets)
+                      log( tweets )
                       
-                      tweetsPage.innerHTML = tmpl("tmpl-tweets", tempalteData);
+                      tweetsPage.innerHTML = tmpl( "tmpl-tweets", tempalteData );
                       
                       // linkify all tweets after pausing for an instant                      
-                      setTimeout( linkifyTweets, 300);
+                      setTimeout( linkifyTweets, 300 );
                       
                   });
                   
               } else {
-                  log('no user, clearing tweet panel');
+                  log( 'no user, clearing tweet panel' );
                   tweetsPage.innerHTML = '';
               }
               
@@ -339,16 +346,16 @@
           
           
           // load an list of all twitter users
-          function loadIndex(){
-              var content = document.createElement('div'),
+          function loadIndex() {
+              var content = document.createElement( 'div' ),
                   data = {
                     users: users,
                     url: url
                   };
                   
-              content.innerHTML = tmpl("tmpl-index", data);
+              content.innerHTML = tmpl( "tmpl-index", data );
               
-              index.appendChild(content);
+              index.appendChild( content );
           }
           
           // replace urls in text with html links
@@ -356,21 +363,21 @@
               var _pattern = /http\S+/g,
                   _template = '<a href="-h-">-h-</a>';
               return ( linkify = function linkify( text ) {
-                  var urls = text.match(_pattern); 
-                  if (urls) for ( var i = urls.length; i--; ) {
-                    text = text.replace(urls[i], _template.replace(/-h-/g, urls[i])); 
+                  var urls = text.match( _pattern ); 
+                  if ( urls ) for ( var i = urls.length; i--; ) {
+                    text = text.replace( urls[i], _template.replace(/-h-/g, urls[i]) ); 
                   }
                   return text;
               })( text );
           }
 
           // log a message to the developer console if availible.
-          function log(message) {
-              try {window.console && console.log && console.log(message)}
+          function log( message ) {
+              try { window.console && console.log && console.log( message ) }
               catch(err){};
           }
           
-      })(jQuery);
+      })( jQuery );
       
   </script>
 
